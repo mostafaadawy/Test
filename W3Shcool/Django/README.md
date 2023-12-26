@@ -270,3 +270,99 @@ x.joined_date = '2022-01-05'
 x.save()
 Member.objects.all().values()
 ```
+
+## Display Data and Templating
+
+we will create other templates to show list of members and then linking them to detailed pages for every one we will show how extending layout or master
+
+- Create Template `my_tennis_club/members/templates/all_members.html`
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Members</h1>
+
+<ul>
+  {% for x in mymembers %}
+    <li>{{ x.firstname }} {{ x.lastname }}</li>
+  {% endfor %}
+</ul>
+
+</body>
+</html>
+```
+
+- the `{% %}` brackets inside the HTML document? They are Django Tags, telling Django to perform some programming logic inside these brackets.
+- Modify View to include function for the new endpoint `my_tennis_club/members/views.py`
+
+```sh
+from django.http import HttpResponse
+from django.template import loader
+from .models import Member
+
+def members(request):
+  mymembers = Member.objects.all().values()
+  template = loader.get_template('all_members.html')
+  context = {
+    'mymembers': mymembers,
+  }
+  return HttpResponse(template.render(context, request))
+```
+
+- Create Details Template `my_tennis_club/members/templates/details.html`
+
+```sh
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<h1>{{ mymember.firstname }} {{ mymember.lastname }}</h1>
+
+<p>Phone: {{ mymember.phone }}</p>
+<p>Member since: {{ mymember.joined_date }}</p>
+
+<p>Back to <a href="/members">Members</a></p>
+
+</body>
+</html>
+```
+
+- Add Link in all-members Template `my_tennis_club/members/templates/all_members.html`
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Members</h1>
+
+<ul>
+  {% for x in mymembers %}
+    <li><a href="details/{{ x.id }}">{{ x.firstname }} {{ x.lastname }}</a></li>
+  {% endfor %}
+</ul>
+
+</body>
+</html>
+```
+
+- need for new template new view method `my_tennis_club/members/views.py`
+
+```sh
+my_tennis_club/members/views.py
+```
+
+- add urls for the new templates and view methods `my_tennis_club/members/urls.py`
+
+```sh
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('members/', views.members, name='members'),
+    path('members/details/<int:id>', views.details, name='details'),
+]
+```

@@ -511,5 +511,95 @@ If you try to access a page that does not exist (a 404 error), Django directs yo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*'] 
+ALLOWED_HOSTS = ['*']
+```
+
+## Customize The 404 Template
+
+Django will look for a file named 404.html in the templates folder, and display it when there is a 404 error. If no such file exists, Django shows the "Not Found" that you saw in the example above.
+
+To customize this message, all you have to do is to create a file in the templates folder and name it 404 `my_tennis_club/members/templates/404.html`.html, and fill it with whatever you want:
+
+```sh
+<!DOCTYPE html>
+<html>
+<title>Wrong address</title>
+<body>
+
+<h1>Ooops!</h1>
+
+<h2>I cannot find the file you requested!</h2>
+
+</body>
+</html>
+```
+
+## Django Add Test View
+
+Test code without destroying the main project.
+
+- Add View Start by adding a view called "testing" in the `my_tennis_club/members/views.py`
+
+```sh
+from django.http import HttpResponse
+from django.template import loader
+from .models import Member
+
+def members(request):
+  mymembers = Member.objects.all().values()
+  template = loader.get_template('all_members.html')
+  context = {
+    'mymembers': mymembers,
+  }
+  return HttpResponse(template.render(context, request))
+
+def details(request, id):
+  mymember = Member.objects.get(id=id)
+  template = loader.get_template('details.html')
+  context = {
+    'mymember': mymember,
+  }
+  return HttpResponse(template.render(context, request))
+
+def main(request):
+  template = loader.get_template('main.html')
+  return HttpResponse(template.render())
+
+def testing(request):
+  template = loader.get_template('template.html')
+  context = {
+    'fruits': ['Apple', 'Banana', 'Cherry'],
+  }
+  return HttpResponse(template.render(context, request))
+```
+
+- We have to make sure that incoming urls to /testing/ will be redirected to the testing view `my_tennis_club/members/urls.py`
+
+```sh
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.main, name='main'),
+    path('members/', views.members, name='members'),
+    path('members/details/<int:id>', views.details, name='details'),
+    path('testing/', views.testing, name='testing'),
+]
+```
+
+- Create Test Template `my_tennis_club/members/templates/template.html`
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+{% for x in fruits %}
+  <h1>{{ x }}</h1>
+{% endfor %}
+
+<p>In views.py you can see what the fruits variable looks like.</p>
+
+</body>
+</html>
 ```

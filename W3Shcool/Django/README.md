@@ -430,4 +430,70 @@ urlpatterns = [
 ```
 
 - run the server
--
+
+## Django Add Main Index Page
+
+- adding view for the nmain `127.0.0.1:8000/.`
+- create `my_tennis_club/members/templates/main.html`
+- - Create new View `my_tennis_club/members/views.py`
+
+```sh
+from django.http import HttpResponse
+from django.template import loader
+from .models import Member
+
+def members(request):
+  mymembers = Member.objects.all().values()
+  template = loader.get_template('all_members.html')
+  context = {
+    'mymembers': mymembers,
+  }
+  return HttpResponse(template.render(context, request))
+
+def details(request, id):
+  mymember = Member.objects.get(id=id)
+  template = loader.get_template('details.html')
+  context = {
+    'mymember': mymember,
+  }
+  return HttpResponse(template.render(context, request))
+
+def main(request):
+  template = loader.get_template('main.html')
+  return HttpResponse(template.render())
+```
+
+- Add URL `my_tennis_club/members/urls.py`
+
+```sh
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.main, name='main'),
+    path('members/', views.members, name='members'),
+    path('members/details/<int:id>', views.details, name='details'),
+]
+```
+- Add Link Back to Main `my_tennis_club/members/templates/all_members.html`
+```sh
+{% extends "master.html" %}
+
+{% block title %}
+  My Tennis Club - List of all members
+{% endblock %}
+
+
+{% block content %}
+
+  <p><a href="/">HOME</a></p>
+
+  <h1>Members</h1>
+  
+  <ul>
+    {% for x in mymembers %}
+      <li><a href="details/{{ x.id }}">{{ x.firstname }} {{ x.lastname }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+```

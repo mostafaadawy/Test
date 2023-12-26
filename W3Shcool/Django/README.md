@@ -97,3 +97,54 @@ urlpatterns = [
 
 - after runniong the server by `py manage.py runserver`
   now we can check using the browser link [127.0.0.1:8000/members](http://127.0.0.1:8000/members)
+
+## Returning Templates
+
+- Create a templates folder inside the members folder, and create a HTML file named myfirst.html `my_tennis_club/members/templates/myfirst.html`
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Hello World!</h1>
+<p>Welcome to my first Django project!</p>
+
+</body>
+</html>
+```
+
+- Modify the View `my_tennis_club/members/views.py` to use `django.template import loader` insteadof `django.http import HttpResponse`
+
+```sh
+from django.http import HttpResponse
+from django.template import loader
+
+def members(request):
+  template = loader.get_template('myfirst.html')
+  return HttpResponse(template.render())
+```
+
+## Change Settings
+
+- Setting needs to be adjusted to return output files so it needs to include the app first `my_tennis_club/my_tennis_club/settings.py`
+
+```sh
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'members'
+]
+```
+
+we can also migrate the required tables where as in setting file the db is connected to mysqlite3 file
+
+```sh
+py manage.py migrate
+```
+
+- now run the server and check the members <p style="color:red">not mail url but members</p>

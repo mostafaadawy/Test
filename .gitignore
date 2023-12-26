@@ -1,6 +1,5 @@
 # Ignore virtual environment
-/W3school/Django/myworld/
-
+myworld
 # Ignore pipenv virtual environment
 Pipfile
 Pipfile.lock

@@ -366,3 +366,68 @@ urlpatterns = [
     path('members/details/<int:id>', views.details, name='details'),
 ]
 ```
+
+## Layout/Master Template Django Add Master Template
+
+- Django provides a way of making a "parent template" that you can include in all pages to do the stuff that is the same in all pages. and then extending it
+- creating a template called `my_tennis_club/members/templates/master.html`
+
+```sh
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>
+```
+
+- Modify Templates `my_tennis_club/members/templates/all_members.html`
+
+```sh
+{% extends "master.html" %}
+
+{% block title %}
+  My Tennis Club - List of all members
+{% endblock %}
+
+
+{% block content %}
+  <h1>Members</h1>
+
+  <ul>
+    {% for x in mymembers %}
+      <li><a href="details/{{ x.id }}">{{ x.firstname }} {{ x.lastname }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+```
+
+- Modify Templates `my_tennis_club/members/templates/details.html`
+
+```sh
+{% extends "master.html" %}
+
+{% block title %}
+  Details about {{ mymember.firstname }} {{ mymember.lastname }}
+{% endblock %}
+
+
+{% block content %}
+  <h1>{{ mymember.firstname }} {{ mymember.lastname }}</h1>
+
+  <p>Phone {{ mymember.phone }}</p>
+  <p>Member since: {{ mymember.joined_date }}</p>
+
+  <p>Back to <a href="/members">Members</a></p>
+
+{% endblock %}
+```
+
+- run the server
+-

@@ -475,7 +475,9 @@ urlpatterns = [
     path('members/details/<int:id>', views.details, name='details'),
 ]
 ```
+
 - Add Link Back to Main `my_tennis_club/members/templates/all_members.html`
+
 ```sh
 {% extends "master.html" %}
 
@@ -489,11 +491,25 @@ urlpatterns = [
   <p><a href="/">HOME</a></p>
 
   <h1>Members</h1>
-  
+
   <ul>
     {% for x in mymembers %}
       <li><a href="details/{{ x.id }}">{{ x.firstname }} {{ x.lastname }}</a></li>
     {% endfor %}
   </ul>
 {% endblock %}
+```
+
+## Django 404 (page not found)
+
+Page Not Found
+If you try to access a page that does not exist (a 404 error), Django directs you to a built-in view that handles 404 errors. In the browser window, type 127.0.0.1:8000/masfdfg/ in the address bar. You will get one of two results:
+
+- if got error not 404 page this means that debug is true so we need to edit it in the seeting as follows to see 404 page `my_tennis_club/my_tennis_club/settings.py`
+
+```sh
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+ALLOWED_HOSTS = ['*'] 
 ```

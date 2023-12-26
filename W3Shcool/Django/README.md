@@ -148,3 +148,125 @@ py manage.py migrate
 ```
 
 - now run the server and check the members <p style="color:red">not mail url but members</p>
+
+## Django Models
+
+data is created in objects, called Models, and is actually tables in a database.
+
+## Create Table (Model)
+
+- navigate to `my_tennis_club/members/models.py`
+
+```sh
+from django.db import models
+
+class Member(models.Model):
+  firstname = models.CharField(max_length=255)
+  lastname = models.CharField(max_length=255)
+```
+
+- till now the edit is on the model to allow ORM functions on it but table still not exist so in order to make that affect reflectes into tables we can use django command to create or edit the tables for that model or model edition by the next command that will create a corresponding file in the migration folder:
+
+```sh
+py manage.py makemigrations members
+```
+
+- then we should run the command to add the created table to the tabels in our case in sqlite
+
+```sh
+py manage.py migrate
+```
+
+- where we can check the sql view by next command
+
+```sh
+py manage.py sqlmigrate members 0001
+```
+
+## How to Insert Update Delete records in our DB
+
+we can do all of the next CRUD operation from the view or controller and using the model but for now we will use shell offered by `manage.py` Dajango as tinker in laravel to check the model crude operations
+
+### Insert Data
+
+- enter the shell `py manage.py shell`
+- import our required model `>>> from members.models import Member`
+- using the model we required to get all its records `>>> Member.objects.all()` which in the first time will responce by empty array query
+- now insert one record `member = Member(firstname='Emil', lastname='Refsnes')` and do not forget to save `member.save()`
+- if you try to get the records or its values try `Member.objects.all().values()`
+- now we can add multiple records as follows:
+
+```sh
+>>> member1 = Member(firstname='Tobias', lastname='Refsnes')
+>>> member2 = Member(firstname='Linus', lastname='Refsnes')
+>>> member3 = Member(firstname='Lene', lastname='Refsnes')
+>>> member4 = Member(firstname='Stale', lastname='Refsnes')
+>>> member5 = Member(firstname='Jane', lastname='Doe')
+>>> members_list = [member1, member2, member3, member4, member5]
+>>> for x in members_list:
+>>>   x.save()
+>>> Member.objects.all().values()
+```
+
+- To update the existing data or fields in record first we import the model then taget certain record from the table then assign to its fild the value then save as follows
+
+```sh
+from members.models import Member
+x = Member.objects.all()[4]
+x.firstname = "Stalikken"
+x.save()
+```
+
+- To delete a record first we import the model then taget certain record from the table then delete it as follows
+
+```sh
+from members.models import Member
+x = Member.objects.all()[5]
+x.delete()
+```
+
+## If we have a model how to add fileds to it ?
+
+To add a field to a table after it is created, open the models.py file, and make your changes `my_tennis_club/members/models.py`
+
+```sh
+from django.db import models
+
+class Member(models.Model):
+  firstname = models.CharField(max_length=255)
+  lastname = models.CharField(max_length=255)
+  phone = models.IntegerField()
+  joined_date = models.DateField()
+```
+
+- as we edit the model so we need to create new migration for this modification `py manage.py makemigrations members`
+- creating the modification especialy when adding columns that was not exists to table has values so it need initial values for the already existing records to this new field so it will ask you Qyuit and edit yourself or eh will sey defaults for your columns in previous recors so we select 2 Quite
+- edit the file again to contain the default values as follows `my_tennis_club/members/models.py`:
+
+```sh
+from django.db import models
+
+class Member(models.Model):
+  firstname = models.CharField(max_length=255)
+  lastname = models.CharField(max_length=255)
+  phone = models.IntegerField(null=True)
+  joined_date = models.DateField(null=True)
+```
+
+- then make migration for the table and then run migrate
+
+```sh
+py manage.py makemigrations members
+py manage.py migrate
+```
+
+- now we can access the new fields using `py manage.py shell`
+
+```sh
+from members.models import Member
+x = Member.objects.all()[0]
+x.phone = 5551234
+x.joined_date = '2022-01-05'
+x.save()
+Member.objects.all().values()
+```

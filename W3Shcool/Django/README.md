@@ -1628,3 +1628,239 @@ Use the with tag to get the length of fruits only one time
 <tr><th>var1=val1 var2=val2 var3=val3 etc.</th><th>Required. Declaring variable(s) and their value(s).</th></tr>
 </tbody>
 </table>
+
+## Django QuerySet
+
+A QuerySet is a collection of data from a database.
+
+A QuerySet is built up as a list of objects.
+
+QuerySets makes it easier to get the data you actually need, by allowing you to filter and order the data at an early stage.
+
+In this tutorial we will be querying data from the Member table
+
+Querying Data
+In views.py, we have a view for testing called testing where we will test different queries.
+
+In the example below we use the .all() method to get all the records and fields of the Member model
+
+As you can see, our Member model contains 5 records, and are listed inside the QuerySet as 5 objects.
+
+In the template you can use the mymembers object to generate content
+
+`templates/template.html`
+
+```sh
+<table border='1'>
+  <tr>
+    <th>ID</th>
+    <th>Firstname</th>
+    <th>Lastname</th>
+  </tr>
+  {% for x in mymembers %}
+    <tr>
+      <td>{{ x.id }}</td>
+        <td>{{ x.firstname }}</td>
+      <td>{{ x.lastname }}</td>
+    </tr>
+  {% endfor %}
+</table>
+```
+
+### Get Data
+
+There are different methods to get data from a model into a QuerySet.
+
+### The values() Method
+
+The values() method allows you to return each object as a Python dictionary, with the names and values as key/value pairs:
+
+ExampleGet your own Django Server `views.py`
+
+```sh
+from django.http import HttpResponse
+from django.template import loader
+from .models import Member
+
+def testing(request):
+  mydata = Member.objects.all().values()
+  template = loader.get_template('template.html')
+  context = {
+    'mymembers': mydata,
+  }
+  return HttpResponse(template.render(context, request))
+```
+
+### Return Specific Columns
+
+The values_list() method allows you to return only the columns that you specify
+
+Return only the records where firstname is 'Emil'
+
+```sh
+from django.http import HttpResponse
+from django.template import loader
+from .models import Member
+
+def testing(request):
+  mydata = Member.objects.filter(firstname='Emil').values()
+  template = loader.get_template('template.html')
+  context = {
+    'mymembers': mydata,
+  }
+  return HttpResponse(template.render(context, request))
+```
+
+### Django QuerySet - Filter
+
+The filter() method is used to filter your search, and allows you to return only the rows that matches the search term.
+
+As we learned in the previous chapter, we can filter on field names like this:
+
+ExampleGet your own Django Server
+Return only the records where the firstname is 'Emil'
+
+- > mydata = Member.objects.filter(firstname='Emil').values()
+- in sql
+- > SELECT \* FROM members WHERE firstname = 'Emil';
+
+### AND
+
+The filter() method takes the arguments as \*\*kwargs (keyword arguments), so you can filter on more than one field by separating them by a comma.
+
+Example
+Return records where lastname is "Refsnes" and id is 2
+
+- > mydata = Member.objects.filter(lastname='Refsnes', id=2).values()
+- in Sql
+- > SELECT \* FROM members WHERE lastname = 'Refsnes' AND id = 2;
+
+### OR
+
+To return records where firstname is Emil or firstname is Tobias (meaning: returning records that matches either query, not necessarily both) is not as easy as the AND example above.
+
+We can use multiple filter() methods, separated by a pipe | character. The results will merge into one model.
+
+Example
+Return records where firstname is either "Emil" or Tobias"
+
+- > mydata = Member.objects.filter(firstname='Emil').values() | Member.objects.filter(firstname='Tobias').values()
+- Another common method is to import and use Q expressions: Example Return records where firstname is either "Emil" or Tobias"
+
+```sh
+from django.http import HttpResponse
+from django.template import loader
+from .models import Member
+from django.db.models import Q
+
+def testing(request):
+  mydata = Member.objects.filter(Q(firstname='Emil') | Q(firstname='Tobias')).values()
+  template = loader.get_template('template.html')
+  context = {
+    'mymembers': mydata,
+  }
+  return HttpResponse(template.render(context, request))
+```
+
+- In SQL, the above statement would be written like this
+- > SELECT \* FROM members WHERE firstname = 'Emil' OR firstname = 'Tobias';
+
+### Field Lookups
+
+Django has its own way of specifying SQL statements and WHERE clauses.
+
+To make specific where clauses in Django, use "Field lookups".
+
+Field lookups are keywords that represents specific SQL keywords.
+
+Example:
+Use the \_\_startswith keyword
+
+- > .filter(firstname\_\_startswith='L');
+- in sql
+- > WHERE firstname LIKE 'L%'
+- The above statement will return records where firstname starts with 'L'
+
+### Field Lookups Syntax
+
+All Field lookup keywords must be specified with the fieldname, followed by two(!) underscore characters, and the keyword.
+
+In our Member model, the statement would be written like this:
+
+Example
+Return the records where firstname starts with the letter 'L'
+
+- > mydata = Member.objects.filter(firstname\_\_startswith='L').values()
+
+### Field Lookups Reference
+
+A list of all field look up keywords:
+
+<table>
+<tbody>
+<tr><th>Keyword</th><th>Description</th></tr>
+<tr><td>contains</td><td>Contains the phrase</td></tr>
+<tr><td>icontains</td><td>Same as contains, but case-insensitive</td></tr>
+<tr><td>date</td><td>Matches a date</td></tr>
+<tr><td>day</td><td>Matches a date (day of month, 1-31) (for dates)</td></tr>
+<tr><td>endswith</td><td>Ends with</td></tr>
+<tr><td>iendswith</td><td>Same as endswidth, but case-insensitive</td></tr>
+<tr><td></td><td>An exact match</td></tr>
+<tr><td>iexact</td><td>Same as exact, but case-insensitive</td></tr>
+<tr><td></td><td>Matches one of the values</td></tr>
+<tr><td>isnull</td><td>Matches NULL values</td></tr>
+<tr><td></td><td>Greater than</td></tr>
+<tr><td>gte</td><td>Greater than, or equal to</td></tr>
+<tr><td>hour</td><td>Matches an hour (for datetimes)</td></tr>
+<tr><td>lt</td><td>Less than</td></tr>
+<tr><td>lte</td><td>Less than, or equal to</td></tr>
+<tr><td>minute</td><td>Matches a minute (for datetimes)</td></tr>
+<tr><td>month</td><td>Matches a month (for dates)</td></tr>
+<tr><td>quarter</td><td>Matches a quarter of the year (1-4) (for dates)</td></tr>
+<tr><td>range</td><td>Match between</td></tr>
+<tr><td>regex</td><td>Matches a regular expression</td></tr>
+<tr><td>iregex</td><td>Same as regex, but case-insensitive</td></tr>
+<tr><td>second</td><td>Matches a second (for datetimes)</td></tr>
+<tr><td>startswith</td><td>Starts with</td></tr>
+<tr><td>istartswith</td><td>Same as startswith, but case-insensitive</td></tr>
+<tr><td>time</td><td>Matches a time (for datetimes)</td></tr>
+<tr><td>week</td><td>Matches a week number (1-53) (for dates)</td></tr>
+<tr><td>week_day</td><td>Matches a day of week (1-7) 1 is sunday</td></tr>
+<tr><td>iso_week_day</td><td>Matches a ISO 8601 day of week (1-7) 1 is monday</td></tr>
+<tr><td>year</td><td>Matches a year (for dates)</td></tr>
+<tr><td>iso_year</td><td>Matches an ISO 8601 year (for dates)</td></tr>
+</tbody>
+</table>
+
+### Django QuerySet - Order By
+
+To sort QuerySets, Django uses the order_by() method:
+
+ExampleGet your own Django Server
+Order the result alphabetically by firstname
+
+- > mydata = Member.objects.all().order_by('firstname').values()
+- In SQL,
+- > SELECT \* FROM members ORDER BY firstname;
+
+### Descending Order
+
+By default, the result is sorted ascending (the lowest value first), to change the direction to descending (the highest value first), use the minus sign (NOT), - in front of the field name:
+
+Example
+Order the result firstname descending
+
+- > mydata = Member.objects.all().order_by('-firstname').values()
+- in sql
+- > SELECT \* FROM members ORDER BY firstname DESC;
+
+### Multiple Order Bys
+
+To order by more than one field, separate the fieldnames with a comma in the order_by() method:
+
+Example
+Order the result first by lastname ascending, then descending on id
+
+- > mydata = Member.objects.all().order_by('lastname', '-id').values()
+- in sql
+- > SELECT \* FROM members ORDER BY lastname ASC, id DESC;

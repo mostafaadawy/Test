@@ -673,3 +673,12 @@ class MemberAdmin(admin.ModelAdmin):
 
 admin.site.register(Member, MemberAdmin)
 ```
+
+## Update Members
+
+- Now we are able to create, update, and delete members in our database, and we start by giving them all a date for when they became members from the admin panel
+
+## Django Syntax
+
+Template Variables
+In Django templates, you can render variables by putting them inside`{{ }}`brackets

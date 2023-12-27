@@ -680,5 +680,951 @@ admin.site.register(Member, MemberAdmin)
 
 ## Django Syntax
 
-Template Variables
-In Django templates, you can render variables by putting them inside`{{ }}`brackets
+- Template Variables: In Django templates, you can render variables by putting them inside`{{ }}`brackets
+- Django Template Tags: In Django templates, you can perform programming logic like executing if statements and for loops. These keywords, if and for, are called "template tags" in Django. To execute template tags, we surround them in {% %} brackets.
+-
+
+```sh
+{% if greeting == 1 %}
+  <h1>Hello</h1>
+{% else %}
+  <h1>Bye</h1>
+{% endif %}
+```
+
+- Django Code
+  The template tags are a way of telling Django that here comes something else than plain HTML. The template tags allows us to to do some programming on the server before sending HTML to the client.
+
+```sh
+<ul>
+  {% for x in mymembers %}
+    <li>{{ x.firstname }}</li>
+  {% endfor %}
+</ul>
+```
+
+## Tag Reference: A list of all template tags:
+
+<table>
+<tbody>
+<tr><th>Tag</th><th>Description</th><th><th></tr>
+<tr><th>autoescape</th><th>Specifies if autoescape mode is on or off</th></tr>
+<tr><th>block</th><th>Specifies a block section</th></tr>
+<tr><th>comment</th><th>Specifies a comment section</th></tr>
+<tr><th>csrf_token</th><th>Protects forms from Cross Site Request Forgeries</th></tr>
+<tr><th>cycle</th><th>Specifies content to use in each cycle of a loop</th></tr>
+<tr><th>debug</th><th>Specifies debugging information</th></tr>
+<tr><th>extends</th><th>Specifies a parent template</th></tr>
+<tr><th>filter</th><th>Filters content before returning it</th></tr>
+<tr><th>firstof</th><th>Returns the first not empty variable</th></tr>
+<tr><th>for</th><th>Specifies a for loop</th></tr>
+<tr><th>if</th><th>Specifies a if statement</th></tr>
+<tr><th>ifchanged</th><th>Used in for loops. Outputs a block only if a value has changed since the last iteration</th></tr>
+<tr><th>include</th><th>Specifies included content/template</th></tr>
+<tr><th>load</th><th>Loads template tags from another library</th></tr>
+<tr><th>lorem</th><th>Outputs random text</th></tr>
+<tr><th>now</th><th>Outputs the current date/time</th></tr>
+<tr><th>regroup</th><th>Sorts an object by a group</th></tr>
+<tr><th>resetcycle</th><th>Used in cycles. Resets the cycle</th></tr>
+<tr><th>spaceless</th><th>Removes whitespace between HTML tags</th></tr>
+<tr><th>templatetag</th><th>Outputs a specified template tag</th></tr>
+<tr><th>url</th><th>Returns the absolute URL part of a URL</th></tr>
+<tr><th>verbatim</th><th>Specifies contents that should not be rendered by the template engine</th></tr>
+<tr><th>widthratio</th><th>Calculates a width value based on the ratio between a given value and a max value</th></tr>
+<tr><th>with</th><th>Specifies a variable to use in the block</th></tr>
+</tbody>
+</table>
+
+### autoescape
+
+```sh
+{% autoescape off %}
+  <h1>{{ heading }}</h1>
+{% endautoescape %}
+```
+
+When escape is on, these characters are escaped:
+
+- < is converted to &lt;
+- symbole > is converted to &gt;
+- ' is converted to '
+- " is converted to "
+- & is converted to &amp;
+
+### block
+
+Define a section in a master template that should be replaced by a section in a child template:
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Welcome</h1>
+
+{% block userinfo %}
+  <h2>Not registered yet</h2>
+{% endblock %}
+
+</body>
+</html>
+```
+
+The block tag has two functions:
+
+1. It is a placeholder for content.
+2. It is content that will replace the placeholder.
+   In master templates the block tag is a placeholder that will be replaced by a block in a child template with the same name.
+
+In child templates the block tag is content that will replace the placeholder in the master template with the same name.
+
+In the example above you see the content of a master template, it has a block called userinfo. This block will be replaced with a block called userinfo in a child template:
+
+```sh
+{% extends "mymaster.html" %}
+
+{% block userinfo %}
+  <h2>John Doe</h2>
+  <p>Explorer of life.</p>
+{% endblock %}
+```
+
+### comment
+
+Insert a comment in the Django code:
+Definition and Usage
+The comment tag allows you to add comment sections that will be ignored by Django. Comments can be used to make the code more readable. Comments can be used to prevent execution when testing code. You can add an explanation to your comments to make them more understandable:
+
+```sh
+<h1>Welcome Everyone!</h1>
+
+{% comment %}
+  <h1>Greetings!</h2>
+{% endcomment %}
+```
+
+Add an explanation to your comment:
+
+```sh
+
+<h1>Welcome Everyone!</h1>
+
+{% comment "optional heading" %}
+  <h1>Greetings!</h2>
+{% endcomment %}
+```
+
+### csrf_token
+
+```sh
+
+```
+
+### cycle
+
+Add a new color for each iteration in a for loop
+
+```sh
+<ul>
+{% for x in fruits %}
+  <li style='color:{% cycle 'red' 'green' 'blue' 'pink' %}'>
+    {{ x }}
+  </li>
+{% endfor %}
+</ul>
+```
+
+Definition and Usage
+The cycle tag returns different values for different iterations in a loop. The first iteration gets the first value, the second iteration gets the second value etc. You can have as many values as you like. If there are more iterations that values, the cycle resets and starts at value 1
+
+```sh
+<ul>
+{% for x in fruits %}
+  <li style='color:{% cycle 'red' 'blue' %}'>
+    {{ x }}
+  </li>
+{% endfor %}
+</ul>
+```
+
+`{% cycle arg1 arg2 arg3 etc. %}`
+
+### debug
+
+### extends
+
+Specify that this template relies on a parent template
+
+```sh
+{% extends "mymaster.html" %}
+
+{% block heading %}
+  <h2>John Doe</h2>
+  <p>Explorer of life</p>
+{% endblock %}
+
+{% block cars %}
+  <li>Ford</li>
+  <li>Volvo</li>
+  <li>Audi</li>
+{% endblock %}
+```
+
+Definition and Usage
+The extends tag is used to specify that this template needs a parent template.
+
+The extends tag takes one argument, which is the name of the parent template.
+
+When a child template with a parent template is requested, Django uses the parent template as a "skeleton" and fills it with content from the child template, according to the matching block tags.
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Welcome</h1>
+<hr>
+
+{% block heading %}
+  <h2>No name</h2>
+{% endblock %}
+
+<h2>My Cars</h2>
+
+<ul>
+  {% block cars %}
+    <li>No cars</li>
+  {% endblock %}
+</ul>
+
+</body>
+</html>
+```
+
+`{% extends parenttemplate %}`
+
+### filter
+
+Output text in upper case:
+
+```sh
+<h1>Welcome Everyone!</h1>
+
+{% filter upper %}
+  <p>Have a great day!</p>
+{% endfilter %}
+```
+
+Definition and Usage
+The filter tag allows you to run a section of code through a filter, and return it according to the filter keyword(s).
+
+To add multiple filters, separate the keywords with the pipe | character.
+
+```sh
+{% filter keyword %}
+  ...
+{% endfilter %}
+```
+
+Parameters
+The filter tag takes any of these keywords as parameter(s):
+
+<table>
+<tbody>
+
+<tr><th>Keyword</th><th>Description</th></tr>
+<tr><th>add	</th><th>Adds a specified value.</th></tr>
+<tr><th>addslashes</th><th>	Adds a slash before any quote characters, to escape strings.</th></tr>
+<tr><th>capfirst</th><th>	Returns the first letter in uppercase.</th></tr>
+<tr><th>center	</th><th>Centers the value in the middle of a specified width.</th></tr>
+<tr><th>cut	</th><th>Removes any specified character or phrases.</th></tr>
+<tr><th>date	</th><th>Returns dates in the specified format.</th></tr>
+<tr><th>default	</th><th>Returns a specified value if the value is False.</th></tr>
+<tr><th>default_if_none	</th><th>Returns a specified value if the value is None.</th></tr>
+<tr><th>dictsort	</th><th>Sorts a dictionary by the given value.</th></tr>
+<tr><th>dictsortreversed	</th><th>Sorts a dictionary reversed, by the given value.</th></tr>
+<tr><th>divisibleby	</th><th>Returns True if the value can be divided by the specified number, otherwise it returns False.</th></tr>
+<tr><th>escape	</th><th>Escapes HTML code from a string.</th></tr>
+<tr><th>escapejs	</th><th>Escapes JavaScript code from a string.</th></tr>
+<tr><th>filesizeformat	</th><th>Returns a number into a file size format.</th></tr>
+<tr><th>first	</th><th>Returns the first item of an object (for Strings, the first character is returned).</th></tr>
+<tr><th>floatformat	</th><th>Rounds floating numbers to a specified number of decimals, default one decimal.</th></tr>
+<tr><th>force_escape	</th><th>Escapes HTML code from a string.</th></tr>
+<tr><th>get_digit	</th><th>Returns a specific digit of a number.</th></tr>
+<tr><th>iriencode	</th><th>Convert an IRI into a URL friendly string.</th></tr>
+<tr><th>join	</th><th>Returns the items of a list into a string</th></tr>
+<tr><th>json_script	</th><th>Returns an object into a JSON object surrounded by <script></script> tags.</th></tr>
+<tr><th>last	</th><th>Returns the last item of an object (for Strings, the last character is returned).</th></tr>
+<tr><th>length	</th><th>Returns the number of items in an object, or the number of characters in a string.</th></tr>
+<tr><th>length_is	</th><th>Returns True if the length is the same as the specified number</th></tr>
+<tr><th>linebreaks	</th><th>Returns the text with <br> instead of line breaks, and <p> instead of more than one line break.</th></tr>
+<tr><th>linebreaksbr	</th><th>Returns the text with <br> instead of line breaks.</th></tr>
+<tr><th>linenumbers	</th><th>Returns the text with line numbers for each line.</th></tr>
+<tr><th>ljust	</th><th>Left aligns the value according to a specified width</th></tr>
+<tr><th>lower	</th><th>Returns the text in lower case letters.</th></tr>
+<tr><th>make_list	</th><th>Converts a value into a list object.</th></tr>
+<tr><th>phone2numeric	</th><th>Converts phone numbers with letters into numeric phone numbers.</th></tr>
+<tr><th>pluralize	</th><th>Adds a 's' at the end of a value if the specified numeric value is not 1.</th></tr>
+<tr><th>pprint	 </th><th></th></tr>
+<tr><th>random	</th><th>Returns a random item of an object</th></tr>
+<tr><th>rjust	</th><th>Right aligns the value according to a specified width</th></tr>
+<tr><th>safe	</th><th>Marks that this text is safe and should not be HTML escaped.</th></tr>
+<tr><th>safeseq	</th><th>Marks each item of an object as safe and the item should not be HTML escaped.</th></tr>
+<tr><th>slice	</th><th>Returns a specified slice of a text or object.</th></tr>
+<tr><th>slugify	</th><th>Converts text into one long alphanumeric-lower-case word.</th></tr>
+<tr><th>stringformat	</th><th>Converts the value into a specified format.</th></tr>
+<tr><th>striptags	</th><th>Removes HTML tags from a text.</th></tr>
+<tr><th>time	</th><th>Returns a time in the specified format.</th></tr>
+<tr><th>timesince	</th><th>Returns the difference between two datetimes.</th></tr>
+<tr><th>timeuntil	</th><th>Returns the difference between two datetimes.</th></tr>
+<tr><th>title	</th><th>Upper cases the first character of each word in a text, all other characters are converted to lower case.</th></tr>
+<tr><th>truncatechars	</th><th>Shortens a string into the specified number of characters.</th></tr>
+<tr><th>truncatechars_html	</th><th>Shortens a string into the specified number of characters, not considering the length of any HTML tags.</th></tr>
+<tr><th>truncatewords	</th><th>Shortens a string into the specified number of words.</th></tr>
+<tr><th>truncatewords_html	</th><th>Shortens a string into the specified number of words, not considering any HTML tags.</th></tr>
+<tr><th>unordered_list	</th><th>Returns the items of an object as an unordered HTML list.</th></tr>
+<tr><th>upper	</th><th>Returns the text in upper case letters.</th></tr>
+<tr><th>urlencode	</th><th>URL encodes a string.</th></tr>
+<tr><th>urlize	</th><th>Returns any URLs in a string as HTML links.</th></tr>
+<tr><th>urlizetrunc	</th><th>Returns any URLs in a string as HTML links, but shortens the links into the specified number of characters.</th></tr>
+<tr><th>wordcount	</th><th>Returns the number of words in a text.</th></tr>
+<tr><th>wordwrap	</th><th>Wrap words at a specified number of characters.</th></tr>
+<tr><th>yesno	</th><th>Converts Booleans values into specified values.</th></tr>
+<tr><th>i18n	</th><th></th></tr> 
+<tr><th>l10n	</th><th></th></tr> 
+<tr><th>tz	 </th><th></th></tr>
+</tbody>
+</table>
+
+### firstof
+
+Return the first of the three variables (x, y, z) whose value is not empty or false
+
+```sh
+<h1>
+{% firstof x y z %}
+</h1>
+```
+
+Definition and Usage
+The firstof tag returns the first argument that is not an empty variable.
+
+Empty variables can be an empty string "", or a zero number 0, or a boolean false.
+
+```sh
+<h1>
+{% firstof x y z %}
+</h1>
+```
+
+`{% firstof var1 var2 var3 etc. %}`
+
+### for
+
+Loop through a list and display the values
+
+```sh
+<ul>
+  {% for x in fruits %}
+    <li>{{ x }}</li>
+  {% endfor %}
+</ul>
+```
+
+Definition and Usage
+The for tag allows you to iterate over items in an object.
+
+Objects can be array-like objects like a Python list or object-like objects like a Python dictionary:
+
+```sh
+{% for x, y in mycar.items %}
+  <p>The {{ x }} is {{ y }}.</p>
+{% endfor %}
+```
+
+`{% for item in object %}
+...
+{% endfor %}`
+
+Built-in for Variables
+There are some built-in variables you can use inside for loops:
+
+<table>
+<tbody>
+<tr><th>Variable</th><th>Description</th></tr>	
+<tr><th>forloop.counter</th><th>The current iteration, starting at 1.</th></tr>	
+<tr><th>forloop.counter0</th><th>The current iteration, starting at 0.</th></tr>	
+<tr><th>forloop.first</th><th>Check if this iteration is the first iteration.</th></tr>	
+<tr><th>forloop.last</th><th>Check if this iteration is the last iteration.</th></tr>	
+<tr><th>forloop.parentloop</th><th>Refers to the parent loop.</th></tr>	
+<tr><th>forloop.revcounter</th><th>The current iteration, counting backwords, ending at 1.</th></tr>	
+<tr><th>forloop.revcounter0</th><th>The current iteration, counting backwords, ending at 0.</th></tr>
+</tbody>
+</table>
+
+### if
+
+Display a header if the value of the myvar variable is 1:
+
+```sh
+{% if myvar == 1 %}
+  <h1>Hello!</h1>
+{% endif %}
+```
+
+Definition and Usage
+The if tag allows you to write conditional statements.
+
+Use if statements to output a block of code if a condition is true.
+
+You can use else or elif (short for "else if") to specify what to do when the if condition is false.
+
+```sh
+{% if myvar == 1 %}
+  <h1>Hello!</h1>
+{% else %}
+  <h1>Greetings!</h1>
+{% endif %}
+```
+
+Display a third heading if none of the conditions are true
+
+```sh
+{% if myvar == 1 %}
+  <h1>Hello!</h1>
+{% elif myvar == 2 %}
+  <h1>Welcome!</h1>
+{% else %}
+  <h1>Greetings!</h1>
+{% endif %}
+```
+
+`{% if condition %}
+...
+{% endif %}`
+
+Operators
+There are some built-in operators you can use when evaluating if statements:
+
+<table>
+<tbody>
+<tr><th>Variable</th><th>Description</th></tr>	
+<tr><th>==</th><th>is equal to</th></tr>	
+<tr><th>!=</th><th>is not equal to</th></tr>	
+<tr><th><</th><th>is less than</th></tr>	
+<tr><th><=</th><th>is less than, or equal to</th></tr>	
+<tr><th>></th><th>is greater than</th></tr>	
+<tr><th>>=</th><th>is greater than, or equal to</th></tr>	
+<tr><th>and</th><th>condition1 and condition2 must be true</th></tr>	
+<tr><th>or</th><th>condition1 or condition2 must be true</th></tr>	
+<tr><th>in</th><th>an item must be present in an object</th></tr>	
+<tr><th>is</th><th>is the same value as</th></tr>	
+<tr><th>is</th><th>not	is not the same value as</th></tr>	
+<tr><th>not</th><th>in	is not in</th></tr>
+</tbody>
+</table>
+
+### ifchanged
+
+Loop through a list, but display the value only if it has changed since the last iteration
+
+```sh
+<ul>
+  {% for x in mylist %}
+    {% ifchanged %}
+      <li>{{ x }}</li>
+    {% endifchanged %}
+  {% endfor %}
+</ul>
+```
+
+Definition and Usage
+The ifchanged tag allows you to check a value in a loop and output a code if the value has changed since the last iteration.
+
+If the iteration object has many values per iteration, you can specify which value to check, and the block of code will only displayed if that value has changed since the last iteration
+
+Loop through the members object and check if the brand property has changed
+
+```sh
+{% for x in cars %}
+  {% ifchanged x.brand %}
+    <h1>{{ x.brand }}:</h1>
+  {% endifchanged %}
+  <p>{{ x.model }}, {{ x.year }}</p>
+{% endfor %}
+```
+
+You can also define an {% else %} clause for content that should be displayed if the value has not changed
+
+```sh
+{% for x in mylist %}
+  {% ifchanged %}
+    <p>New value: {{ x }}</p>
+  {% else %}
+    <p>Same value: {{ x }}</p>
+  {% endifchanged %}
+{% endfor %}
+```
+
+`{% ifchanged property %}
+...
+{% endifchanged %}`
+
+### include
+
+Include a template inside the template
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+{% include mymenu.html %}
+
+<h1>Welcome</h1>
+
+<p>This is my webpage</p>
+
+</body>
+</html>
+```
+
+Definition and Usage
+The include tag allows you to include content from another template.
+
+Place the include tag exactly where you want the content to be displayed.
+
+This is useful when you have the same content for many pages.
+
+You can also send variables into the template, by using the with keyword
+
+If the include file looks like this
+
+`<div>HOME | {{ me }} | ABOUT | FORUM | {{ sponsor }}</div>`
+
+The template can send variable values into the include like this
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+{% include mymenu.html with me="ALEXANDER" sponsor="W3SCHOOLS" %}
+
+<h1>Welcome</h1>
+
+<p>This is my webpage</p>
+
+</body>
+</html>
+```
+
+`{% include template %}`
+
+or
+
+`{% include template with key=value%}`
+
+### load
+
+### lorem
+
+Insert 50 words of random text
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+{% lorem 50 w %}
+
+</body>
+</html>
+```
+
+Definition and Usage
+The lorem tag inserts a specified amount of random text.
+
+The "random" text is the famous "Lorum ipsum" text, in lower case letters
+
+Insert 5 paragraphs of random text
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+{% lorem 5 p %}
+
+</body>
+</html>
+```
+
+```sh
+{% lorem count method random %}
+```
+
+### now
+
+Add the current date
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>{% now "Y-m-d" %}</h1>
+
+</body>
+</html>
+```
+
+Definition and Usage
+The now tag inserts the current date and/or time, according to the specified format.
+
+Example Add the current date and time
+
+```sh
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>{% now "Y-m-d G:i:s" %}</h1>
+
+</body>
+</html>
+```
+
+`{% now format %}`
+
+<table>
+<tbody>
+<tr><th>Value</th><th>Description</th></tr>
+<tr><th>format</th><th>Required. A string with any combination of these characters:</th></tr>
+<tr><th>Character</th><th>Description</th></tr>
+<tr><th>y</th><th>Year, 2 digits (00-99)</th></tr>
+<tr><th>Y</th><th>Year, 4 digits (0001-9999)</th></tr>
+<tr><th>L</th><th>Returns whether now is a leap year or not (True-False)</th></tr>
+<tr><th>m</th><th>Month, 2 digits (01-12)</th></tr>
+<tr><th>n</th><th>Month, 1 or 2 digits (1-12)</th></tr>
+<tr><th>M</th><th>Month, 3 letters (Jan-Dec)</th></tr>
+<tr><th>b</th><th>Month, 3 lower case letters (jan-dec)</th></tr>
+<tr><th>E</th><th>Month, text in local language</th></tr>
+<tr><th>F</th><th>Month, full text (January-December)</th></tr>
+<tr><th>N</th><th>Month, max 5 letters, if month name has more, use proper abbreviation (Jan. Dec.)</th></tr>
+<tr><th>t</th><th>Number of days in month (28-31)</th></tr>
+<tr><th>d</th><th>Day of month (01-31)</th></tr>
+<tr><th>D</th><th>Day of week (Sun-Sat)</th></tr>
+<tr><th>j</th><th>Day of month (1-31)</th></tr>
+<tr><th>l</th><th>Day of week (Sunday-Saturday)</th></tr>
+<tr><th>S</th><th>Ending of number (st-nd-rd-th)</th></tr>
+<tr><th>w</th><th>Day of week (0-6)</th></tr>
+<tr><th>z</th><th>Day of year (1-366)</th></tr>
+<tr><th>W</th><th>Week of year (ISO-8601) (1-53)</th></tr>
+<tr><th>g</th><th>Hour (1-12)</th></tr>
+<tr><th>G</th><th>Hour (0-23)</th></tr>
+<tr><th>h</th><th>Hour (01-12)</th></tr>
+<tr><th>H</th><th>Hour (00-23)</th></tr>
+<tr><th>i</th><th>Minutes (00-59)</th></tr>
+<tr><th>s</th><th>Seconds (00-59)</th></tr>
+<tr><th>u</th><th>Microseconds (000000-999999)</th></tr>
+<tr><th>a</th><th>Meridiem (a.m. or p.m.)</th></tr>
+<tr><th>A</th><th>Meridiem (A.M. or P.M.)</th></tr>
+<tr><th>f</th><th>The Time (9:45). If the time is precisely (on the minute) nine, it returns only the hour (9)</th></tr>
+<tr><th>P</th><th>The Time (9:45 p.m.). If the time is precisely (on the minute) nine, it returns (9 p.m.). If the time is precisely 0:00, it returns (midnight). If the time is precisely 12:00 it returns (noon).</th></tr>
+<tr><th>e</th><th>Name of time zone, like (GMT) or (UTC)</th></tr>
+<tr><th>I</th><th>Returns whether we are in daylight saving time or not (1 or 0)</th></tr>
+<tr><th>O</th><th>The difference to GMT (+0500)</th></tr>
+<tr><th>T</th><th>Local time zone, like (UTC) or (EST)</th></tr>
+<tr><th>Z</th><th>Difference to GMT, in seconds (3600)</th></tr>
+<tr><th>c</th><th>Current date in ISO 8601 format (2022-04-05T12:38:30.797643+00:00)</th></tr>
+<tr><th>r</th><th>Current date in RFC 5322 format (Tue, 05 Apr 2022 12:39:24 +0000)</th></tr>
+<tr><th>U</th><th>Seconds since January 1 1970 00:00:00</th></tr>
+</tbody>
+</table>
+
+### regroup
+
+Display all the cars with a new header for each brand
+
+```sh
+{% regroup cars by brand as newlist %}
+
+{% for x in newlist %}
+  <h1>{{ x.grouper }}</h1>
+  {% for y in x.list %}
+    <p>{{ y.model }}: {{ y.year }}</p>
+  {% endfor %}
+{% endfor %}
+```
+
+Definition and Usage
+The regroup tag returns a new object grouped by a specified value.
+
+The result is divided into one GroupedResult object for each group, making the newlist object from the example above, looking like this
+
+The result from {% regroup cars by brand as newlist %}
+
+```sh
+[
+  GroupedResult(
+    grouper='Ford',
+    list=[
+      {
+        'brand': 'Ford',
+        'model': 'Mustang',
+        'year': '1964'
+      },
+      {
+        'brand': 'Ford',
+        'model': 'Bronco',
+        'year': '1970'
+      },
+      {
+        'brand': 'Ford',
+        'model': 'Sierra',
+        'year': '1981'
+      }
+    ]
+  ),
+  GroupedResult(
+    grouper='Volvo',
+    list=[
+      {
+        'brand': 'Volvo',
+        'model': 'XC90',
+        'year': '2016'
+      },
+      {
+        'brand': 'Volvo',
+        'model': 'P1800',
+        'year': '1964'
+      }
+    ]
+  )
+]
+```
+
+<p style="color:yellow">Note: Make sure the object is sorted correctly before regrouping, otherwise you will end up with groups with the same grouper name</p>
+
+`{% regroup object by object.property as newname %}`
+
+<table>
+<tbody>
+<tr><th>Value</th><th>Description</th></tr>
+<tr><th>object	Required.</th><th> A list or object taht you want to regroup</th></tr>
+<tr><th>object.property	Required.</th><th> The name of the property you want to group by</th></tr>
+<tr><th>newname</th><th>	Required. A new name for the returned object</th></tr>
+</tbody>
+</table>
+
+### resetcycle
+
+Reset the cycle if the fruit is "Banana":
+
+```sh
+<ul>
+  {% for x in fruits %}
+    <li style='color:{% cycle 'red' 'green' 'blue' 'pink' %}'>
+      {{ x }}
+    </li>
+    {% if x == "Banana" %}
+      {% resetcycle %}
+    {% endif %}
+  {% endfor %}
+</ul>
+```
+
+Definition and Usage
+The resetcycle tag is used inside a cycle, and resets the cycle, making it start at the beginning.
+
+It does not reset the loop, only the cycle.
+
+If you have multiple cycles, you can specify which one to reset with the name argument
+
+Reset the mybg cycle if the fruit is "Banana"
+
+```sh
+<ul>
+  {% for x in fruits %}
+    <li style='
+      color:{% cycle 'red' 'green' 'blue' 'pink' as mycolor %};
+      background:{% cycle 'grey' 'beige' 'coral' 'brown' as mybg %};
+    '>{{ x }}</li>
+    {% if x == "Banana" %}
+      {% resetcycle mybg %}
+    {% endif %}
+  {% endfor %}
+</ul>
+```
+
+`{% resetcycle name %}`
+
+### spaceless
+
+Remove the space between the HTML tags
+
+```sh
+{% spaceless %}
+  <ul>
+    {% for x in fruits %}
+      <li>{{ x }}</li>
+    {% endfor %}
+  </ul>
+{% endspaceless %}
+```
+
+Definition and Usage
+The spaceless tag is used to remove any space between tags, in the code.
+
+The spaceless tag removes any whitespaces, new lines and tabs
+
+`{% spaceless %}
+...
+{% endspaceless %}`
+
+### templatetag
+
+Output Django code without execute it
+
+```sh
+<h1>
+  {% templatetag openblock %}
+    extends
+  {% templatetag closeblock %}
+</h1>
+```
+
+Definition and Usage
+The templatetag tag is used to display characters that are normally used to perform Django tasks.
+
+Each tag character, like `{{, {% and {#, has their own name, see below`
+
+`{% templatetag name %}`
+
+Parameters
+
+<table >
+  <tbody><tr>
+    <th >Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><em>name</em></td>
+    <td>Required. A string specifying what to ouput.<br><br>
+    <table class="plaintable">
+    <tbody><tr>
+    <th>Name</th>
+    <th>Output</th>
+    </tr>
+    <tr>
+    <td><code class="w3-codespan">openvariable</code></td>
+    <td>{{</td>
+    </tr>
+    <tr>
+    <td><code class="w3-codespan">closevariable</code></td>
+    <td>}}</td>
+    </tr>
+    <tr>
+    <td><code class="w3-codespan">openblock</code></td>
+    <td>{%</td>
+    </tr>
+    <tr>
+    <td><code class="w3-codespan">closeblock</code></td>
+    <td>%}</td>
+    </tr>
+    <tr>
+    <td><code class="w3-codespan">openbrace</code></td>
+    <td>{</td>
+    </tr>
+    <tr>
+    <td><code class="w3-codespan">closebrace</code></td>
+    <td>}</td>
+    </tr>
+    <tr>
+    <td><code class="w3-codespan">opencomment</code></td>
+    <td>{#</td>
+    </tr>
+    <tr>
+    <td><code class="w3-codespan">closecomment</code></td>
+    <td>#}</td>
+    </tr>
+    </tbody></table>
+  </td></tr>
+</tbody></table>
+
+### url
+
+### verbatim
+
+Output Django code without execute it
+
+```sh
+{% verbatim %}
+  {% for x in fruits %}
+    <p>{{ x }}</p>
+  {% endfor %}
+{% endverbatim %}
+```
+
+Definition and Usage
+The verbatim tag is used to stop Django from executing code.
+
+Anything between {% verbatim %} and {% endverbatim %} will not be executed, but rendered as output instead.
+
+To be sure that you refer to the correct verbatim code block, you can add a name to it:
+
+Example
+When there can be more than one verbatim tag in a code block, use the name argument to specify which one you mean
+
+```sh
+{% verbatim mycode%}
+  {% for x in fruits %}
+    {% verbatim %}
+       <p>{{ x }}</p>
+    {% endverbatim %}
+  {% endfor %}
+{% endverbatim mycode%}
+```
+
+`{% verbatim name %}
+...
+{% endverbatim %}`
+
+### widthratio
+
+### with
+
+Create a variable in the template, and use it
+
+```sh
+{% with firstname="Stalikken" %}
+  <h1>Hello {{ firstname }}</h1>
+{% endwith %}
+```
+
+Definition and Usage
+The with tag is used to create variables in Django templates.
+
+This can be useful when you need to ask for the same variable many times, like in a loop:
+
+Example
+Use the with tag to get the length of fruits only one time
+
+```sh
+{% with myvar=fruits|length %}
+  {% for x in fruits %}
+    <p>{{ x }} is one of {{ myvar }} fruits.</p>
+  {% endfor %}
+{% endwith %}
+```
+
+`{% with var1=val1 var2=val2 var3=val3 etc. %}
+...
+{% endwith %}`
+
+<table>
+<tbody>
+<tr><th>Value</th><th>Description</th></tr>
+<tr><th>var1=val1 var2=val2 var3=val3 etc.</th><th>Required. Declaring variable(s) and their value(s).</th></tr>
+</tbody>
+</table>

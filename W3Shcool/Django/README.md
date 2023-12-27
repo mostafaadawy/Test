@@ -603,3 +603,73 @@ urlpatterns = [
 </body>
 </html>
 ```
+
+## Admin
+
+Django Admin is a really great tool in Django, it is actually a CRUD\* user interface of all your models!
+It is free and comes ready-to-use with Django:
+
+- maybe need to set in `setting.py the debug to true` to allaow styling while it will resultrd in missing the routing to 404
+- [127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
+- Create User: To be able to log into the admin application, we need to create a user. This is done by typing this command in the command view
+
+```sh
+py manage.py createsuperuser
+```
+
+## Django Admin - Include Modules (members)
+
+- in the admin now we did not see the member app so we need to tell django admin about it
+- To include the Member model in the admin interface, we have to tell Django that this model should be visible in the admin interface.
+- This is done in a file called admin.py, and is located in your app's folder, which in our case is the members folder.
+- Insert a couple of lines here to make the Member model visible in the admin page `my_tennis_club/members/admin.py`
+
+```sh
+from django.contrib import admin
+from .models import Member
+
+# Register your models here.
+admin.site.register(Member)
+```
+
+- now we should see the module in the admin panel
+
+## Make the List Display More Reader-Friendly
+
+When you display a Model as a list, Django displays each record as the string representation of the record object, which in our case is "Member object (1)", "Member object(2)" etc
+
+<p style="color:red">Note in python main principle when you check the type of a variavle and it was a class the reurn from the class is object nature may be in readable so to return something readable we can use '__str__' where we can define the data returned when this class is called and we also need to note the use of __iter__ that is used in iteration with next() that make array or list iteratable such as __init__ as a constructor for OOP</P>
+To change this to a more reader-friendly format, we have two choices:
+
+Change the string representation function, `__str__()` of the Member Model
+Set the list_details property of the Member Model `my_tennis_club/members/models.py`
+
+```sh
+from django.db import models
+
+class Member(models.Model):
+  firstname = models.CharField(max_length=255)
+  lastname = models.CharField(max_length=255)
+  phone = models.IntegerField(null=True)
+  joined_date = models.DateField(null=True)
+
+  def __str__(self):
+    return f"{self.firstname} {self.lastname}"
+```
+
+- Defining our own **str**() function is not a Django feature, it is how to change the string representation of objects in Python.
+
+- Set list_display : We can control the fields to display by specifying them in in a list_display property in the admin.py file.
+- First create a MemberAdmin() class and specify the list_display tuple, like this `my_tennis_club/members/admin.py`
+
+```sh
+from django.contrib import admin
+from .models import Member
+
+# Register your models here.
+
+class MemberAdmin(admin.ModelAdmin):
+  list_display = ("firstname", "lastname", "joined_date",)
+
+admin.site.register(Member, MemberAdmin)
+```
